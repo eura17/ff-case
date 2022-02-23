@@ -22,3 +22,19 @@ def read_prices(path: str) -> pd.DataFrame:
     prices = pqr.utils.align(*prices)
 
     return pd.DataFrame(prices).T
+
+
+def read_factor(
+        factor: str,
+        path: str,
+) -> pd.DataFrame:
+    df = pd.read_csv(path)
+    factor_data = pd.pivot_table(
+        df,
+        index="calendardate",
+        columns="ticker",
+        values=factor,
+    )
+    factor_data.index = pd.to_datetime(factor_data.index)
+
+    return factor_data.resample("D").asfreq().ffill()

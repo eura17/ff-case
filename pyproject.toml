@@ -5,8 +5,13 @@ description = ""
 authors = ["Andrey Babkin <andrey.babkin.ru71@gmail.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = ">=3.8, <3.11"
 ipykernel = "^6.9.1"
+pandas = "^1.4.1"
+numpy = "^1.22.2"
+matplotlib = "^3.5.1"
+pqr = "^0.4.0"
+Jinja2 = "^3.0.3"
 
 [tool.poetry.dev-dependencies]
 

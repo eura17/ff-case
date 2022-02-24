@@ -11,9 +11,9 @@ def vix_scaling(
         holdings: pd.DataFrame,
         vix: pd.Series,
         target: float,
-        n: int = 20,
+        n: int,
 ) -> pd.DataFrame:
-    mean_vix = vix.rolling(n).mean().iloc[n:]
+    mean_vix = vix.rolling(n).mean().shift().iloc[n:]
     holdings, mean_vix = pqr.utils.align(
         holdings,
         mean_vix,
@@ -64,25 +64,3 @@ def grid_search(
             grid.loc[n, target] = metric(portfolio)
 
     return grid
-
-
-def volatility_scaling(
-        holdings: pd.DataFrame,
-        prices: pd.DataFrame,
-        target: float,
-        n: int = 20,
-        annualizer: float = 252,
-) -> pd.DataFrame:
-    returns = pqr.calculate_returns(
-        holdings=holdings,
-        universe_returns=pqr.prices_to_returns(prices),
-    )
-
-    volatility = (
-            returns.rolling(n).std().shift().iloc[n:] *
-            np.sqrt(annualizer)
-    )
-    holdings, volatility = pqr.utils.align(holdings, volatility)
-
-    return holdings * pd.DataFrame(target / volatility,
-                                   columns=holdings.columns)

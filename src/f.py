@@ -31,7 +31,7 @@ def read_factor(
     df = pd.read_csv(path)
     factor_data = pd.pivot_table(
         df,
-        index="calendardate",
+        index="datekey",
         columns="ticker",
         values=factor,
     )

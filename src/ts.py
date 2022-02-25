@@ -20,14 +20,20 @@ def vix_scaling(
     )
     mean_vix.name = holdings.columns[0]
 
-    return holdings * pd.DataFrame(target / mean_vix,
-                                   columns=holdings.columns)
+    leverage = pd.DataFrame(target / mean_vix,
+                            columns=holdings.columns)
+
+    return pqr.scale(
+        holdings,
+        base_leverage=leverage,
+        min_leverage=0,
+        max_leverage=1,
+    )
 
 
 def grid_search(
         targets: list[float],
         ns: list[int],
-        volatility: Callable[[pd.DataFrame], pd.DataFrame],
         df: pd.DataFrame,
         metric: Callable[[pqr.Portfolio], float],
 ) -> pd.DataFrame:
@@ -45,14 +51,10 @@ def grid_search(
                 allocator=pqr.utils.compose(
                     lambda holdings: holdings.astype(float),
                     pqr.utils.partial(
-                        volatility,
+                        vix_scaling,
+                        vix=df["VIX_Close"],
                         n=n,
                         target=target,
-                    ),
-                    pqr.utils.partial(
-                        pqr.limit_leverage,
-                        min_leverage=0.3,
-                        max_leverage=1,
                     ),
                 ),
                 calculator=pqr.utils.partial(
